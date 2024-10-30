@@ -2,7 +2,9 @@ package com.buggysoft.verification.controller;
 
 import com.buggysoft.verification.service.VerificationService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 
 @RestController
 @RequestMapping
@@ -68,11 +74,25 @@ public class VerificationController {
       responseCode = "200",
       description = "Welcome message displayed",
       content = @Content(
-          mediaType = "text/plain",
-          examples = @ExampleObject(value = "Welcome to verification services!")
+          mediaType = "application/json",
+          examples = @ExampleObject(value = "{\"message\": \"Welcome to user services!\"}")
       )
   )
-  public ResponseEntity<String> index() {
-    return ResponseEntity.ok("Welcome to verification services!");
+  public ResponseEntity<EntityModel<Map<String, String>>> index() {
+    Map<String, String> welcomeMessage = Map.of(
+        "message", "Welcome to verification services!"
+    );
+
+    // Templated link for `sendCode` with email as a required query parameter
+    Link sendCodeLink = Link.of(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(VerificationController.class)
+            .sendCode(null)).toUri() + "{?email}")
+        .withRel("sendCode")
+        .withTitle("Request Verification Code")
+        .withType("POST");
+
+    EntityModel<Map<String, String>> responseModel = EntityModel.of(welcomeMessage);
+    responseModel.add(sendCodeLink);
+
+    return new ResponseEntity<>(responseModel, HttpStatus.OK);
   }
 }
