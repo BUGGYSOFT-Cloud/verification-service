@@ -27,18 +27,17 @@ public class VerificationController {
     this.verificationService = verificationService;
   }
 
-
   @PostMapping("/sendCode")
   @Operation(summary = "Send Verification Code", description = "Sends a verification code to the specified email address.")
   @ApiResponse(
       responseCode = "200",
       description = "Verification code sent successfully",
-      content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class, example = "Verification code sent!"))
+      content = @Content(mediaType = "text/plain", examples = @ExampleObject(value = "Verification code sent!"))
   )
   @ApiResponse(
       responseCode = "500",
       description = "Failed to send verification code",
-      content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class, example = "Failed to send verification code"))
+      content = @Content(mediaType = "text/plain", examples = @ExampleObject(value = "Failed to send verification code"))
   )
   public ResponseEntity<?> sendCode(@RequestParam String email) {
     return verificationService.sendVerificationCode(email);
@@ -49,17 +48,14 @@ public class VerificationController {
   @ApiResponse(
       responseCode = "200",
       description = "Verification successful",
-      content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class, example = "Verification successful!"))
+      content = @Content(mediaType = "text/plain", examples = @ExampleObject(value = "Verification successful!"))
   )
   @ApiResponse(
       responseCode = "400",
       description = "Verification failed or code expired",
       content = @Content(
           mediaType = "text/plain",
-          schema = @Schema(
-              implementation = String.class,
-              example = "Unable to verify. Please make sure you've received the verification code. | Code expired. Please request a new code. | Verification failed. Please make sure the code is correct."
-          )
+          examples = @ExampleObject(value = "Unable to verify. Please make sure you've received the verification code. | Code expired. Please request a new code. | Verification failed. Please make sure the code is correct.")
       )
   )
   public ResponseEntity<?> verifyUser(@RequestParam String email, @RequestParam String code) {
@@ -73,7 +69,7 @@ public class VerificationController {
       description = "Welcome message displayed",
       content = @Content(
           mediaType = "text/plain",
-          schema = @Schema(implementation = String.class, example = "Welcome to verification services!")
+          examples = @ExampleObject(value = "Welcome to verification services!")
       )
   )
   public ResponseEntity<String> index() {
