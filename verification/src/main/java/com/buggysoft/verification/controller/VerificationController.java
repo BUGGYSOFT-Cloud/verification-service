@@ -2,6 +2,8 @@ package com.buggysoft.verification.controller;
 
 import com.buggysoft.verification.service.VerificationService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.web.util.UriComponentsBuilder;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping
@@ -76,24 +77,15 @@ public class VerificationController {
           examples = @ExampleObject(value = "{\"message\": \"Welcome to user services!\"}")
       )
   )
-  public ResponseEntity<EntityModel<Map<String, String>>> index() {
-    Map<String, String> welcomeMessage = Map.of(
-        "message", "Welcome to verification services!"
-    );
-
-    Link sendCodeLink = Link.of(
-            UriComponentsBuilder
-                .fromUri(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(VerificationController.class).sendCode(null)).toUri())
-                .queryParam("email", "{email}")
-                .encode()
-                .toUriString()
-        )
+  public ResponseEntity<?> index() {
+    Link sendCodeLink = linkTo(WebMvcLinkBuilder.methodOn(VerificationController.class).sendCode(null))
         .withRel("sendCode")
-        .withTitle("Request Verification Code")
         .withType("POST");
-    EntityModel<Map<String, String>> responseModel = EntityModel.of(welcomeMessage);
-    responseModel.add(sendCodeLink);
 
-    return new ResponseEntity<>(responseModel, HttpStatus.OK);
+    Map<String, Object> response = new HashMap<>();
+    response.put("message", "Welcome to verification services!");
+    response.put("sendCodeLink", sendCodeLink);
+
+    return ResponseEntity.ok(response);
   }
 }
