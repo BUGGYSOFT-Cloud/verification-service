@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping
@@ -80,12 +81,16 @@ public class VerificationController {
         "message", "Welcome to verification services!"
     );
 
-    Link sendCodeLink = Link.of(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(VerificationController.class)
-            .sendCode(null)).toUri().toString() + "{?email}")
+    Link sendCodeLink = Link.of(
+            UriComponentsBuilder
+                .fromUri(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(VerificationController.class).sendCode(null)).toUri())
+                .queryParam("email", "{email}")
+                .encode()
+                .toUriString()
+        )
         .withRel("sendCode")
         .withTitle("Request Verification Code")
         .withType("POST");
-
     EntityModel<Map<String, String>> responseModel = EntityModel.of(welcomeMessage);
     responseModel.add(sendCodeLink);
 
