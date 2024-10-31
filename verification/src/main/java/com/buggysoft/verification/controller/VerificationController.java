@@ -80,9 +80,8 @@ public class VerificationController {
         "message", "Welcome to verification services!"
     );
 
-    // Templated link for `sendCode` with email as a required query parameter
     Link sendCodeLink = Link.of(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(VerificationController.class)
-            .sendCode(null)).toUri() + "{?email}")
+            .sendCode(null)).toUri().toString() + "{?email}")
         .withRel("sendCode")
         .withTitle("Request Verification Code")
         .withType("POST");
