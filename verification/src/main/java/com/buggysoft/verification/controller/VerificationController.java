@@ -1,12 +1,12 @@
 package com.buggysoft.verification.controller;
 
+import com.buggysoft.verification.service.JwtService;
 import com.buggysoft.verification.service.VerificationService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,6 +66,41 @@ public class VerificationController {
   public ResponseEntity<?> verifyUser(@RequestParam String email, @RequestParam String code) {
     return verificationService.verifyCode(email, code);
   }
+
+  @PostMapping("/verifyToken")
+  @Operation(
+      summary = "Verify Token",
+      description = "Verifies the user's token sent as a parameter.",
+      responses = {
+          @ApiResponse(
+              responseCode = "200",
+              description = "Verification successful",
+              content = @Content(
+                  mediaType = "text/plain",
+                  examples = @ExampleObject(value = "Verification successful!")
+              )
+          ),
+          @ApiResponse(
+              responseCode = "400",
+              description = "Verification failed or token expired",
+              content = @Content(
+                  mediaType = "text/plain",
+                  examples = @ExampleObject(
+                      value = "Unable to verify. Please provide a valid token. | Token expired. Please request a new token. | Verification failed. Invalid token."
+                  )
+              )
+          )
+      }
+  )
+  public ResponseEntity<String> verifyToken(@RequestParam String token) {
+    try {
+      String email = JwtService.verifyToken(token);
+      return ResponseEntity.ok(email);
+    } catch (RuntimeException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+  }
+
 
   @GetMapping({"/", "/index", "/home"})
   @Operation(summary = "Welcome Page", description = "Provides a welcome message for the Verification API.")

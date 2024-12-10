@@ -69,7 +69,7 @@ public class VerificationService {
     String target = verification.getCode();
     if (target.equals(code)) {
       codeMapper.deleteById(verification.getEmail());
-      return new ResponseEntity<>("Verification successful!", HttpStatus.OK);
+      return new ResponseEntity<>(JwtService.generateToken(email), HttpStatus.OK);
     } else {
       return new ResponseEntity<>("Verification failed. Please make sure the code is correct.", HttpStatus.BAD_REQUEST);
     }
