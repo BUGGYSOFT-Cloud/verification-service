@@ -12,34 +12,65 @@ In order to build and use our service you must install the following:
 5. In order to run the project, either use the IntelliJ built in run function, or go to verification/target and execute *java -jar verification-0.0.1-SNAPSHOT.jar*.
 
 ## Endpoints
-This section describes the endpoints that our service provides, as well as their inputs and outputs.
 
-#### GET /, /index, /home
-
-* Redirects to the homepage.
-
+This section describes the endpoints provided by the Verification service, along with their inputs and outputs.
 
 ---
 
-#### POST /sendCode
-
-* Sends a verification code to the specified email address and stores the code/email pair in a database.
-*
-* @param email -- A `String` representing the email.
-*
-* @return A `ResponseEntity` object containing either a success message or a failure and an error code.
+### GET `/`, `/index`, `/home`
+- **Description:** Provides a welcome message for the Verification API.
+- **Returns:** A JSON object with a welcome message and relevant links for the service.
 
 ---
 
-#### POST /verify
+### POST `/generateCodeAndSave`
+- **Description:** Generates a verification code and saves it to the database.
+- **Request Parameters:**
+  - `email` (String): The email address to associate with the generated code.
+- **Returns:** A `ResponseEntity` containing a success or error message.
 
-* Verifies if a verification code is correct.
-*
-* @param email -- A `String` representing the email which received the code.
-*
-* @param code A `String` representing the code.
-*
-* @return A `ResponseEntity` object containing either a success message or a failure and an error code.
+---
+
+### POST `/verify`
+- **Description:** Verifies the user's code sent to their email.
+- **Request Parameters:**
+  - `email` (String): The email address associated with the verification code.
+  - `code` (String): The verification code to validate.
+- **Returns:** A `ResponseEntity` containing a success or error message.
+
+---
+
+### GET `/auth/callback`
+- **Description:** Handles OAuth callback to retrieve user information from Google.
+- **Request Parameters:**
+  - `code` (String): The authorization code provided by Google.
+- **Returns:** A `ResponseEntity` containing user information or an error message.
+
+---
+
+### POST `/register`
+- **Description:** Triggers the registration process for a user by sending a verification email.
+- **Request Parameters:**
+  - `email` (String): The email address of the user to register.
+- **Returns:** A `ResponseEntity` containing a callback URL for checking the registration status.
+
+---
+
+### GET `/register/status`
+- **Description:** Retrieves the status of a registration request.
+- **Request Parameters:**
+  - `executionId` (String): The unique identifier for the registration process.
+- **Returns:** A `ResponseEntity` containing the registration status or an error message.
+
+---
+
+### GET `/exchangeGoogleToken`
+- **Description:** Exchanges a Google token for a JWT token after validation.
+- **Request Body:**
+  - `email` (String): The email address of the user.
+  - `token` (String): The Google token to validate.
+- **Returns:** A `ResponseEntity` containing a JWT token or an error message.
+
 
 ## Local Variables
 
