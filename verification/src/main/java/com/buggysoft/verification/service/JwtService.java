@@ -6,11 +6,13 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+@Service
 public class JwtService {
-  private static final String SECRET_KEY = System.getenv("JWT_SECRET_KEY");;
+  private static final String SECRET_KEY = System.getenv("JWT_SECRET_KEY");
   private static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
   private static final long EXPIRATION_TIME = 86400000;
 
