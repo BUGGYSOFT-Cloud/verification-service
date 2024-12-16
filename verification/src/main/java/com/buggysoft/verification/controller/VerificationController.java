@@ -1,5 +1,6 @@
 package com.buggysoft.verification.controller;
 
+import com.buggysoft.verification.request.GoogleExchangeRequest;
 import com.buggysoft.verification.service.VerificationService;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 
@@ -92,9 +93,9 @@ public class VerificationController {
     }
   }
 
-  @GetMapping("/exchangeGoogleToken")
-  public ResponseEntity<?> exchangeGoogleToken(@RequestBody String email, @RequestBody String token) {
-    return verificationService.exchangeGoogleToken(email, token);
+  @PostMapping("/exchangeGoogleToken")
+  public ResponseEntity<?> exchangeGoogleToken(@RequestBody GoogleExchangeRequest request) {
+    return verificationService.exchangeGoogleToken(request.getEmail(), request.getToken());
   }
 
 

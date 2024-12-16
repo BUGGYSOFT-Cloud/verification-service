@@ -1,5 +1,6 @@
 package com.buggysoft.verification.service;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import com.buggysoft.verification.entity.Verification;
 import com.buggysoft.verification.mapper.VerificationCodeMapper;
 
@@ -36,7 +37,7 @@ public class VerificationService {
   private static final String CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET");
   private static final String TOKEN_URL = "https://oauth2.googleapis.com/token";
   private static final String USER_INFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
-
+  private static final String GOOGLE_TOKEN_VALIDATE_URL = "https://oauth2.googleapis.com/tokeninfo?access_token=";
 
   public ResponseEntity<?> generateAndSaveVerificationCode(String email) {
     int code = generateCode(6);
@@ -147,19 +148,34 @@ public class VerificationService {
   }
 
   public ResponseEntity<?> exchangeGoogleToken(String email, String token) {
+    if (token == null || token.isEmpty()) {
+      throw new IllegalArgumentException("Google token cannot be null or empty");
+    }
     try {
-      validateGoogleToken(token);
-      return new ResponseEntity<>(JwtService.generateToken(email), HttpStatus.OK);
-    } catch (TokenVerifier.VerificationException e) {
+      boolean res = validateGoogleToken(token);
+      if (res) {
+        return new ResponseEntity<>(JwtService.generateToken(email), HttpStatus.OK);
+      }
+      return new ResponseEntity<>("Invalid google token", HttpStatus.BAD_REQUEST);
+    } catch (Exception e) {
       return new ResponseEntity<>("Invalid google token", HttpStatus.BAD_REQUEST);
     }
   }
 
-  public void validateGoogleToken(String token) throws TokenVerifier.VerificationException {
+  public boolean validateGoogleToken(String token) throws Exception {
     try {
-      TokenVerifier verifier = TokenVerifier.newBuilder().build();
-      verifier.verify(token);
-    } catch (TokenVerifier.VerificationException e) {
+      String url = GOOGLE_TOKEN_VALIDATE_URL + token;
+      HttpHeaders headers = new HttpHeaders();
+      HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+      RestTemplate restTemplate = new RestTemplate();
+      ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
+      if (response.getStatusCode() == HttpStatus.OK) {
+        return true;
+      }
+      return false;
+
+    } catch (Exception e) {
+      e.printStackTrace();
       throw e;
     }
   }
