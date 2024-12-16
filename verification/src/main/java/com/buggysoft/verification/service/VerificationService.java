@@ -228,7 +228,7 @@ public class VerificationService {
         throw e;
       }
       String executionId = triggerWorkflow(email, restTemplate, accessToken, token);
-      String callbackUrl = "/register/status?executeId=" + executionId;
+      String callbackUrl = "/register/status?executionId=" + executionId;
 
       return ResponseEntity
           .accepted()
